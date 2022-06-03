@@ -1,0 +1,70 @@
+@import "antd/dist/antd.css";
+
+$orange: fda50f;
+
+html {
+  font-size: 16px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0269a4;
+  font-family: "Nunito", sans-serif;
+  color: white;
+}
+
+h1 {
+  color: white;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 42px;
+  border-style: none;
+  background-color: #1e3d76;
+  border-radius: 4px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+    rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.btn-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 28px;
+  border-style: none;
+  padding: 0px 6px;
+  background-color: #1e3d76;
+  border-radius: 4px;
+  outline: none;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+    rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+
+  &:hover {
+    color: whitesmoke;
+  }
+}
+
+.wrapper {
+  padding: 10px 60px;
+}
+
+h1.title {
+  font-size: 1.1rem;
+}

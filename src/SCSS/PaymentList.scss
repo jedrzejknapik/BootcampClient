@@ -1,0 +1,24 @@
+.new-payment {
+  margin-top: 20px;
+
+  div.title {
+    font-size: 3rem;
+  }
+}
+
+.select-form {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.amount {
+  display: inline-block;
+  margin-left: 20px;
+  background-color: firebrick;
+  padding: 0px 20px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border: 2px solid white;
+  border-bottom: 0px;
+}

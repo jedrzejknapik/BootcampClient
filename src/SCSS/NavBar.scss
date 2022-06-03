@@ -1,0 +1,46 @@
+.navbar {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  color: white;
+  padding: 40px 15px;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+
+    .company-name {
+      color: white;
+      cursor: pointer;
+    }
+
+    .icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background-color: firebrick;
+      font-size: 22px;
+      border-radius: 50%;
+      margin-right: 10px;
+      border: 1px solid whitesmoke;
+    }
+  }
+
+  .user-info {
+    .user-name {
+      display: inline-block;
+      margin-right: 20px;
+    }
+  }
+
+  .btn-sm {
+    margin-left: auto;
+  }
+}

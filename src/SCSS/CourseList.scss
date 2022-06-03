@@ -1,0 +1,45 @@
+.course-details {
+  margin-top: 20px;
+  .course-name {
+    font-size: 2rem;
+    border-bottom: 2px solid white;
+    margin-bottom: 20px;
+    width: max-content;
+  }
+
+  .details-list {
+    overflow: auto;
+
+    .single-detail {
+      background-color: green;
+      width: max-content;
+      padding: 5px 20px;
+      border: 2px solid white;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+
+    span {
+      font-size: 1.3rem;
+    }
+  }
+
+  .course-detail-element {
+    font-size: 1.3rem;
+
+    span.detail-title {
+      margin-right: 20px;
+      display: inline-block;
+      width: 200px;
+    }
+  }
+}
+
+div.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  .flex-column {
+    flex-basis: 50%;
+  }
+}
