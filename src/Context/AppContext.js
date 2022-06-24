@@ -3,27 +3,23 @@ import { createContext, useState } from "react";
 const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
-  const [loggedUser, setLoggedUser] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedUser, setLoggedUser] = useState(null);
 
-  const logUserIn = (user) => {
+  const logUserIn = (user, isTeacher = true) => {
     setLoggedUser({
       ...user,
+      isTeacher,
     });
-
-    setIsLoggedIn(true);
   };
 
   const logOut = () => {
-    setLoggedUser({});
-    setIsLoggedIn(false);
+    setLoggedUser(null);
   };
 
   return (
     <AppContext.Provider
       value={{
         loggedUser,
-        isLoggedIn,
         logUserIn,
         logOut,
       }}

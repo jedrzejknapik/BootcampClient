@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 function HomePage() {
   return (
     <div className="page">
+      <div className="bar-info">You are logged as a student.</div>
       <div className="user-menu">
         <div className="menu-item">
           <div className="menu-item-icon">

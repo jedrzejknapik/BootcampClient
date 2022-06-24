@@ -22,3 +22,14 @@
   border: 2px solid white;
   border-bottom: 0px;
 }
+
+.flex-wrapper {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: left;
+
+  div:nth-child(1) {
+    width: auto;
+    padding-right: 20px;
+  }
+}

@@ -1,14 +1,17 @@
 .course-details {
   margin-top: 20px;
   .course-name {
-    font-size: 2rem;
+    font-size: 1.4rem;
     border-bottom: 2px solid white;
     margin-bottom: 20px;
     width: max-content;
   }
 
   .details-list {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 400px;
+    padding: 0px 10px 0px 0px;
 
     .single-detail {
       background-color: green;
@@ -20,12 +23,12 @@
     }
 
     span {
-      font-size: 1.3rem;
+      font-size: 1rem;
     }
   }
 
   .course-detail-element {
-    font-size: 1.3rem;
+    font-size: 1rem;
 
     span.detail-title {
       margin-right: 20px;

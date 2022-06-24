@@ -10,23 +10,24 @@ import "../SCSS/CourseList.scss";
 import AppContext from "../Context/AppContext";
 import "../SCSS/EnrollmentList.scss";
 import { Select } from "antd";
+import { formatDate } from "../Utils/formatDate";
+import { useToast } from "../hooks/useToast";
 
 function EnrollmentList() {
+  const { loggedUser } = useContext(AppContext);
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [courses, setCourses] = useState([]);
-  const { loggedUser } = useContext(AppContext);
   const { Option } = Select;
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [reload, setReload] = useState(false);
+  const { errorToast, successToast } = useToast();
 
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
-
       const courses = await getAllCourses();
       setCourses(courses);
-
       const enrollments = await getAllEnrollments();
       setEnrollments(enrollments);
       setLoading(false);
@@ -36,9 +37,14 @@ function EnrollmentList() {
   }, [reload]);
 
   const handleEnroll = async () => {
-    console.log(selectedCourseId);
-    await postEnrollment(selectedCourseId, loggedUser?.id);
-    setReload(!reload);
+    const result = await postEnrollment(selectedCourseId, loggedUser?.id);
+    console.log(result.status);
+    if (result) {
+      successToast();
+      setReload((prev) => !prev);
+    } else {
+      errorToast();
+    }
   };
 
   const columns = [
@@ -51,42 +57,22 @@ function EnrollmentList() {
       title: "Course name",
       dataIndex: "",
       key: "2",
-      render: (enrollment) => (
-        <span>
-          {
-            courses.find((course) => course.id === enrollment.courseId)
-              ?.courseName
-          }
-        </span>
-      ),
+      render: (enrollment) => <span>{enrollment?.course?.courseName}</span>,
     },
     {
       title: "Student",
       dataIndex: "",
       key: "3",
-      render: () => (
+      render: (enrollment) => (
         <span>
-          {loggedUser?.firstName} {loggedUser?.lastName}
+          {enrollment?.student?.firstName} {enrollment?.student?.lastName}
         </span>
       ),
     },
     {
       title: "Date of enrollment",
-      dataIndex: "createdOn",
+      render: (enrollment) => <span>{formatDate(enrollment?.createdOn)}</span>,
     },
-    // {
-    //   title: "Action",
-    //   key: "operation",
-    //   render: (enrollment) => (
-    //     <button
-    //       className="btn-sm"
-    //       onClick={() => handleViewDetails(enrollment)}
-    //     >
-    //       View payments
-    //     </button>
-    //   ),
-    //   align: "right",
-    // },
   ];
 
   return (

@@ -4,6 +4,7 @@ import { Table } from "antd";
 import { NavLink } from "react-router-dom";
 import Card from "../Shared/Card";
 import "../SCSS/CourseList.scss";
+import { formatDate } from "../Utils/formatDate";
 
 function CourseList() {
   const [courses, setCourses] = useState([]);
@@ -81,11 +82,11 @@ function CourseList() {
           </div>
           <div className="course-detail-element">
             <span className="detail-title">Start</span>
-            {selectedCourse.startDate}
+            {formatDate(selectedCourse.startDate)}
           </div>
           <div className="course-detail-element">
             <span className="detail-title">End</span>
-            {selectedCourse.endDate}
+            {formatDate(selectedCourse.endDate)}
           </div>
         </div>
       )}

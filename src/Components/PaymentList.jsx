@@ -1,47 +1,38 @@
 import { useContext, useEffect, useState } from "react";
-import {
-  getAllCourses,
-  getAllEnrollments,
-  getAllPayments,
-  postPayment,
-} from "../API/ApiClient";
+import { getAllEnrollments, postPayment } from "../API/ApiClient";
 import { Table } from "antd";
 import Card from "../Shared/Card";
 import "../SCSS/CourseList.scss";
 import AppContext from "../Context/AppContext";
 import "../SCSS/PaymentList.scss";
 import { Select, InputNumber } from "antd";
+import { formatDate } from "../Utils/formatDate";
+import { useToast } from "../hooks/useToast";
 
 function PaymentList() {
   const [enrollments, setEnrollments] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [payments, setPaymants] = useState([]);
-
+  const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const { loggedUser } = useContext(AppContext);
   const { Option } = Select;
-  const [selectedEnrollmentId, setSelectedEnrollmentId] = useState(null);
   const [reload, setReload] = useState(false);
-  const [paymentsForEnrollment, setPaymentsForEnrollment] = useState([]);
+  const { successToast, errorToast } = useToast();
   const [amount, setAmount] = useState(0);
-  const [amountTotal, setAmountTotal] = useState(0);
-  const [amountPaid, setAmountPaid] = useState(0);
 
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
-
-      const courses = await getAllCourses();
-      setCourses(courses);
-
       const enrollments = await getAllEnrollments();
       setEnrollments(
         enrollments.filter((item) => item.studentId === loggedUser.id)
       );
-
-      const payments = await getAllPayments();
-      setPaymants(payments);
+      setSelected((prev) => {
+        if (prev != null) {
+          return enrollments.find((e) => e.id == prev.id);
+        } else {
+          return null;
+        }
+      });
       setLoading(false);
     };
 
@@ -49,32 +40,18 @@ function PaymentList() {
   }, [reload]);
 
   const handleViewPayments = (enrollment) => {
-    setSelectedEnrollmentId(enrollment.id);
-    const forEnrollment = [...payments].filter(
-      (p) => p.enrollmentId == enrollment.id
-    );
-    setPaymentsForEnrollment(forEnrollment);
-
-    let amountPaid = 0;
-
-    for (const payment of forEnrollment) {
-      amountPaid += payment.amount;
-    }
-
-    let amountTotal = 0;
-
-    setAmountPaid(amountPaid);
-
-    amountTotal = courses.find(
-      (course) => course.id === enrollment.courseId
-    )?.price;
-
-    setAmountTotal(amountTotal);
+    setSelected(enrollment);
   };
 
-  const handlePay = async () => {
-    await postPayment(selectedEnrollmentId, amount);
-    setReload(!reload);
+  const handlePay = async (enrollment) => {
+    const result = await postPayment(enrollment?.id, amount);
+    console.log(result);
+    if (result) {
+      successToast();
+      setReload((prev) => !prev);
+    } else {
+      errorToast();
+    }
   };
 
   const columns = [
@@ -87,28 +64,21 @@ function PaymentList() {
       title: "Course name",
       dataIndex: "",
       key: "2",
-      render: (enrollment) => (
-        <span>
-          {
-            courses.find((course) => course.id === enrollment.courseId)
-              ?.courseName
-          }
-        </span>
-      ),
+      render: (enrollment) => <span>{enrollment?.course?.courseName}</span>,
     },
     {
       title: "Student",
       dataIndex: "",
       key: "3",
-      render: () => (
+      render: (enrollment) => (
         <span>
-          {loggedUser?.firstName} {loggedUser?.lastName}
+          {enrollment?.student?.firstName} {enrollment?.student?.lastName}
         </span>
       ),
     },
     {
       title: "Date of enrollment",
-      dataIndex: "createdOn",
+      render: (enrollment) => <span>{formatDate(enrollment?.createdOn)}</span>,
     },
     {
       title: "Action",
@@ -141,34 +111,33 @@ function PaymentList() {
           scroll={{ y: 500 }}
         />
       </Card>
-      {selectedEnrollmentId && (
-        <div className="flex-row">
+      {selected && (
+        <div className="flex-wrapper">
           <div className="course-details flex-column">
             <div className="course-name">
-              View payments for enrollment {selectedEnrollmentId}
+              Enrollment {selected.id}
               <span className="amount">
-                {amountPaid}/{amountTotal} PLN
+                {selected.payments
+                  .map((p) => p.amount)
+                  .reduce((partialSum, a) => partialSum + a, 0)}
+                /{selected.course.price} PLN
               </span>
             </div>
             <div className="details-list">
-              {paymentsForEnrollment.length > 0 ? (
-                paymentsForEnrollment.map((payment) => (
-                  <div className="single-detail">
+              {selected.payments.length > 0 ? (
+                selected.payments.map((payment, index) => (
+                  <div key={index} className="single-detail">
                     <div className="course-detail-element">
                       <span className="detail-title">Payment no.</span>
                       {payment.id}
                     </div>
                     <div className="course-detail-element">
                       <span className="detail-title">Date of payment</span>
-                      {payment.dateOfPayment}
+                      {formatDate(payment.dateOfPayment)}
                     </div>
                     <div className="course-detail-element">
                       <span className="detail-title">Amount</span>
                       {payment.amount} PLN
-                    </div>
-                    <div className="course-detail-element last">
-                      <span className="detail-title">Installment no.</span>
-                      {payment.rate}
                     </div>
                   </div>
                 ))
@@ -184,12 +153,14 @@ function PaymentList() {
                 placeholder="Select enrollment"
                 style={{ width: 200, marginRight: "20px", height: "42px" }}
                 size="large"
-                value={selectedEnrollmentId}
-                onChange={(id) => setSelectedEnrollmentId(id)}
+                value={selected.id}
+                onChange={(enrollment) => setSelected(enrollment)}
                 disabled={true}
               >
-                {enrollments.map((e) => (
-                  <Option value={e.id}>{e.id}</Option>
+                {enrollments.map((e, index) => (
+                  <Option key={index} value={e.id}>
+                    {e.course.courseName}
+                  </Option>
                 ))}
               </Select>
               <InputNumber
@@ -202,7 +173,7 @@ function PaymentList() {
                 value={amount}
                 onChange={(val) => setAmount(val)}
               />
-              <button className="btn" onClick={handlePay}>
+              <button className="btn" onClick={() => handlePay(selected)}>
                 Make payment
               </button>
             </div>

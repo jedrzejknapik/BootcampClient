@@ -2,23 +2,37 @@ import "../SCSS/LoginPage.scss";
 import { InputNumber } from "antd";
 import { useState, useContext } from "react";
 import { Navigate } from "react-router-dom";
+import { getStudentById, getLecturerById } from "../API/ApiClient";
 import AppContext from "../Context/AppContext";
-import { getUserById } from "../API/ApiClient";
+import { useToast } from "../hooks/useToast";
 
 function LoginPage() {
   const [userId, setUserId] = useState(1);
   const { loggedUser, logUserIn, isLoggedIn } = useContext(AppContext);
+  const { successToast, errorToast } = useToast();
 
   const handleUserChange = (value) => {
     setUserId(value);
   };
 
   const handleLogin = async () => {
-    const user = await getUserById(userId);
+    const user = await getStudentById(userId);
 
     if (user) {
-      logUserIn(user);
+      logUserIn(user, false);
     } else {
+      errorToast();
+      return;
+    }
+  };
+
+  const handleLoginLecturer = async () => {
+    const user = await getLecturerById(userId);
+
+    if (user) {
+      logUserIn(user, true);
+    } else {
+      errorToast();
       return;
     }
   };
@@ -38,9 +52,14 @@ function LoginPage() {
         size="large"
         style={inputStyle}
       />
-      <button className="btn" onClick={handleLogin}>
-        Log in
-      </button>
+      <div className="buttons-wrapper">
+        <button className="btn" onClick={handleLogin}>
+          Log in as a Student
+        </button>
+        <button className="btn red" onClick={handleLoginLecturer}>
+          Log in as a Lecturer
+        </button>
+      </div>
     </div>
   );
 }
